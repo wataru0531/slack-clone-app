@@ -1,13 +1,20 @@
+
+// auth.controllers.ts
+
 import { Router, Request, Response } from 'express';
 import datasource from '../../datasource';
 import { User } from '../users/user.entity';
 import { compare, hash } from 'bcryptjs';
 import { encodeJwt } from '../../lib/jwt';
 
+// ✅ Router → ルーティングを振り分ける。/signup、/signin、/me に振り分けている。
+//             小さいExpressルーター。
+//             /auth がきたら、authControllerに渡す。
 const authController = Router();
 const userRepository = datasource.getRepository(User);
 
 // ユーザー登録
+// Expressサーバーがリクエストを受け入れる。
 authController.post('/signup', async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
@@ -16,7 +23,9 @@ authController.post('/signup', async (req: Request, res: Response) => {
       return;
     }
 
-    // メールアドレスの重複チェック
+    // ✅ メールアドレスの重複チェック
+    // useRepository → Userテーブル操作オブジェクトを生成
+    // findOne → SQL的に言うと、SELECT * FROM user WHERE email = ? LIMIT 1
     const existingUser = await userRepository.findOne({ where: { email } });
     if (existingUser) {
       res
@@ -29,6 +38,7 @@ authController.post('/signup', async (req: Request, res: Response) => {
     const hashedPassword = await hash(password, 10);
 
     // ユーザー作成
+    // save → SQLでは、INSERT INTO users ...のような感じ
     const user = await userRepository.save({
       name,
       email,
