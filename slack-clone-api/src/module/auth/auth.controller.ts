@@ -13,7 +13,8 @@ import { encodeJwt } from '../../lib/jwt';
 const authController = Router();
 const userRepository = datasource.getRepository(User);
 
-// ユーザー登録
+
+// ✅ ユーザー登録
 // Expressサーバーがリクエストを受け入れる。
 authController.post('/signup', async (req: Request, res: Response) => {
   try {
@@ -45,9 +46,12 @@ authController.post('/signup', async (req: Request, res: Response) => {
       password: hashedPassword,
     });
 
+    // ✅ JWT → 改ざんできない「デジタル身分証」。ヘッダー.ペイロード.署名でできている。
+    // ログイン成功 → サーバーがトークン発行 → クライアントが保存 → 以後それを提示して通信
     const token = encodeJwt(user.id);
 
-    // パスワードを除外してレスポンスを返す
+    // パスワードを除外して、レスポンスをフロントに返す
+    // password: _, でpasswordを_という変数で受けとり、これは使わない
     const { password: _, ...userWithoutPassword } = user;
     res.status(200).json({ user: userWithoutPassword, token });
   } catch (error) {
@@ -56,7 +60,7 @@ authController.post('/signup', async (req: Request, res: Response) => {
   }
 });
 
-// ログイン
+// ✅ ログイン
 authController.post('/signin', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
