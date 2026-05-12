@@ -35,8 +35,7 @@ authController.post('/signup', async (req: Request, res: Response) => {
       return;
     }
 
-    // パスワードのハッシュ化
-    const hashedPassword = await hash(password, 10);
+    const hashedPassword = await hash(password, 10); // パスワードのハッシュ化
 
     // ユーザー作成
     // save → SQLでは、INSERT INTO users ...のような感じ
@@ -74,22 +73,22 @@ authController.post('/signin', async (req: Request, res: Response) => {
     // ユーザーの検索
     const user = await userRepository.findOne({ where: { email } });
     if (!user) {
-      res
-        .status(401)
-        .json({ message: 'メールアドレスまたはパスワードが正しくありません' });
+      res.status(401).json({ message: 'メールアドレスまたはパスワードが正しくありません' });
       return;
     }
 
     // パスワードの確認
+    // compare → ユーザーが入力したパスワード、DBに保存されているハッシュ化されたパスワード」が一致するか
+    //           どうかを確認
+    //           内部では、入力したパスをハッシュ化して照合している
     const isPasswordValid = await compare(password, user.password);
-    if (!isPasswordValid) {
-      res
-        .status(401)
-        .json({ message: 'メールアドレスまたはパスワードが正しくありません' });
+    if(!isPasswordValid) {
+      res.status(401).json({ message: 'メールアドレスまたはパスワードが正しくありません' });
       return;
     }
 
     // JWTトークンの生成
+    // → サインアップ時にも生成するが、既にクライアントにあるJWTトークンを上書きする処理を組む
     const token = encodeJwt(user.id);
 
     // パスワードを除外してレスポンスを返す
@@ -101,13 +100,15 @@ authController.post('/signin', async (req: Request, res: Response) => {
   }
 });
 
-// 現在のユーザー情報取得
+
+// 現在ログインしているユーザー情報取得
 authController.get('/me', async (req: Request, res: Response) => {
   try {
     if (req.currentUser == null) {
       res.status(200).json(null);
       return;
     }
+
     const { password, ...userWithoutPassword } = req.currentUser;
     res.status(200).json(userWithoutPassword);
   } catch (error) {
