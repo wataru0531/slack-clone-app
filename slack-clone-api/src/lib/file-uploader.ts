@@ -22,6 +22,7 @@ export const upload = ( req: Request, res: Response, folderName: string
   // ✅ どう保存するかの設定を組む → ディスク保存用の設定オブジェクトを生成
   // → この時点では保存していない。
   // 👉 multer ... Expressでファイルアップロードを扱うためのライブラリ
+  //               ファイルアップロード処理ミドルウェアのこと
   // diskStorage() → ファイルをディスク(サーバーのフォルダ)に保存する方式
   const storage = multer.diskStorage({ 
     destination, // このフォルダに保存。uploads/account に入れる。
@@ -61,6 +62,8 @@ export const upload = ( req: Request, res: Response, folderName: string
       // ✅ 現在のサーバーのURLを作る
       // URL生成 http://localhost:3000
       // req.get("host") → リクエストヘッダーのHostを取得
+      // ホストこのリクエストが届いた宛先の住所
+      // スキーム: https。 ホスト: www.example.com。 ポート: 443
       const baseURL = req.protocol + '://' + req.get('host');
 
       resolve({

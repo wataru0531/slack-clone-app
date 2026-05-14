@@ -28,7 +28,7 @@ accountController.put('/profile', Auth, async (req: Request, res: Response) => {
     }
 
     // ✅ アップロード処理。
-    // 画像URL、フォームのデータ(nameなど)を返す
+    // 画像までのパス、データ(nameなど)を返す
     const { fileUrl, body } = await upload(req, res, 'account');
 
     const updatedUser = await userRepository.save({ // DBの更新

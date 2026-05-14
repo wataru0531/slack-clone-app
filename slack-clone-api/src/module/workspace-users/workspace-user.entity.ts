@@ -1,3 +1,7 @@
+
+// /module/workspace-users/workspace-user.entity.ts
+// ✅ ユーザーとワークスペースの紐づけテーブル
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -9,6 +13,10 @@ import {
 import { User } from '../users/user.entity';
 import { Workspace } from '../workspaces/workspace.entity';
 
+// ✅ @Entity
+// 意味 → このクラスはDBのテーブルです
+// これを付けると：
+// 👉 TypeORMが「WorkspaceUserテーブルとして扱う」と認識する
 @Entity()
 export class WorkspaceUser {
   @PrimaryGeneratedColumn('uuid')
@@ -17,8 +25,10 @@ export class WorkspaceUser {
   @Column()
   userId: string;
 
+  // 
+  // 多対一のリレーション ✅ TODO
   @ManyToOne(() => User, (user) => user.workspaceUsers)
-  @Index()
+  @Index() // ✅ このカラムを検索しやすくするための“索引（インデックス）”をDBに作る
   user: User;
 
   @Column()

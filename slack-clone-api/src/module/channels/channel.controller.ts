@@ -1,3 +1,7 @@
+
+// /module/channels/channel.controller.ts
+
+
 import { Router, Request, Response } from 'express';
 import datasource from '../../datasource';
 import { Channel } from './channel.entity';
@@ -8,30 +12,30 @@ const channelController = Router();
 const channelRepository = datasource.getRepository(Channel);
 const workspaceUserRepository = datasource.getRepository(WorkspaceUser);
 
+
 // ワークスペース内のすべてのチャンネルを取得
-channelController.get(
-  '/:workspaceId',
-  Auth,
-  async (req: Request, res: Response) => {
-    try {
-      const { workspaceId } = req.params;
+// Auth ... ミドルウェア。ログインしている人のみ通す。Expressのルール
+//          例 app.get(path, middleware1, middleware2, handler)
+channelController.get('/:workspaceId', Auth, async (req: Request, res: Response) => {
+  try {
+    const { workspaceId } = req.params;
 
-      const channels = await channelRepository.find({
-        where: { workspaceId },
-        order: { createdAt: 'ASC' },
-      });
+    const channels = await channelRepository.find({
+      where: { workspaceId },
+      order: { createdAt: 'ASC' },
+    });
 
-      res.status(200).json(channels);
-    } catch (error) {
-      console.error('チャンネル取得エラー:', error);
-      res.status(500).json({ message: 'サーバーエラーが発生しました' });
-    }
+    res.status(200).json(channels);
+  } catch (error) {
+    console.error('チャンネル取得エラー:', error);
+    res.status(500).json({ message: 'サーバーエラーが発生しました' });
   }
-);
+});
 
 // 特定のチャンネルを取得
 channelController.get('/:id', Auth, async (req: Request, res: Response) => {
   try {
+    // /:id の idが渡ってくる
     const { id } = req.params;
     const channel = await channelRepository.findOne({
       where: { id },
@@ -49,25 +53,22 @@ channelController.get('/:id', Auth, async (req: Request, res: Response) => {
   }
 });
 
-// チャンネルを作成
+// ✅ チャンネルを作成
 channelController.post('/', Auth, async (req: Request, res: Response) => {
   try {
     const { name, workspaceId } = req.body;
 
-    if (!name) {
+    if(!name) {
       res.status(400).json({ message: 'チャンネル名は必須です' });
       return;
     }
 
-    if (!workspaceId) {
+    if(!workspaceId) {
       res.status(400).json({ message: 'ワークスペースIDは必須です' });
       return;
     }
 
-    const channel = await channelRepository.save({
-      name,
-      workspaceId,
-    });
+    const channel = await channelRepository.save({ name, workspaceId });
 
     res.status(201).json(channel);
   } catch (error) {
@@ -76,42 +77,52 @@ channelController.post('/', Auth, async (req: Request, res: Response) => {
   }
 });
 
-// チャンネルを削除
+// ✅ チャンネルを削除
+// ・Slackの構造
+// Workspace: 会社A
+//  ├─ Channel: general
+//  │    ├─ Message
+//  │    ├─ Message
+//  │
+//  ├─ Channel: dev
+//       ├─ Message
+
 channelController.delete('/:id', Auth, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
+    // 削除対象のチェンネルを取得
     const existingChannel = await channelRepository.findOne({
       where: { id },
     });
 
-    if (!existingChannel) {
+    if(!existingChannel) {
       res.status(404).json({ message: 'チャンネルが見つかりません' });
       return;
     }
 
-    // ユーザーがワークスペースに所属しているか確認
+    // ✅ 権限チェック
+    // → ユーザーがワークスペースに所属しているか確認
     const isWorkspaceMember = await workspaceUserRepository.findOne({
       where: {
         workspaceId: existingChannel.workspaceId,
-        userId: req.currentUser.id,
+        userId: req.currentUser.id, // Authミドルウェアでログインユーザー情報が入っている
       },
     });
 
-    if (!isWorkspaceMember) {
-      res
-        .status(403)
-        .json({ message: 'このチャンネルを削除する権限がありません' });
+    if(!isWorkspaceMember) {
+      res.status(403).json({ message: 'このチャンネルを削除する権限がありません' });
       return;
     }
 
-    // ワークスペース内のチャンネル数を確認
+    // ✅ ワークスペース内のチャンネル数を確認
     const channelCount = await channelRepository.count({
       where: { workspaceId: existingChannel.workspaceId },
     });
 
     // チャンネルが1つしかない場合は削除できないようにする
-    if (channelCount <= 1) {
+    // → もし全部消えるとワークスペースが空になるため。
+    if(channelCount <= 1) {
       res.status(400).json({
         message: 'ワークスペースには少なくとも1つのチャンネルが必要です',
       });
