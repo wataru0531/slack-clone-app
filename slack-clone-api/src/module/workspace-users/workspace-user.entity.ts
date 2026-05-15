@@ -1,6 +1,7 @@
 
 // /module/workspace-users/workspace-user.entity.ts
 // ✅ ユーザーとワークスペースの紐づけテーブル
+// どのワークスペースにどのユーザーが参加しているかを表すテーブル
 
 import {
   Entity,

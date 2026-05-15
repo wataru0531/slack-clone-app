@@ -11,7 +11,7 @@ import { Request, Response } from 'express';
 // 呼び出し元の処理　account.controller.ts
 // →  const { fileUrl, body } = await upload(req, res, 'account');
 
-export const upload = ( req: Request, res: Response, folderName: string
+export const upload = (req: Request, res: Response, folderName: string
 ): Promise<{ fileUrl: string | null; body: any }> => {
   const destination = `uploads/${folderName}`; // フォルダ名を定義
 

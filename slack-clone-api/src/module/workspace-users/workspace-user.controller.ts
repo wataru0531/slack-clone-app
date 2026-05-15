@@ -3,6 +3,8 @@
 
 // このワークスペースに、複数のユーザーをメンバーとして追加する処理
 
+// どのワークスペースにどのユーザーが参加しているかを表すテーブル
+
 import { Router, Request, Response } from 'express';
 import datasource from '../../datasource';
 import { WorkspaceUser } from './workspace-user.entity';

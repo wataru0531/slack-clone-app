@@ -39,8 +39,14 @@ export class Message {
   @Column() // 投稿者のID
   userId: string;
 
+  // ⭐️ TODO
   // ✅ ユーザーとの関係
-  // → このMessageは1人のUserに属する
+  // → このMessageは1人のUserに属するという意味
+  // () => User ... このリレーションの相手はUser、という意味
+  // (user) => user.message → 
+  // → User側から見たとき、このMessageはどのプロパティに入るの？」という“逆方向の定義
+  //   なので、User側の定義は逆に、下記のようになっている
+  //   @OneToMany(() => Message, (message) => message.user)
   @ManyToOne(() => User, (user) => user.messages)
   @Index()
   user: User;
@@ -48,6 +54,9 @@ export class Message {
   @Column()
   channelId: string;
 
+  // このMessageは1つのChannelに属していて、Channelが消えたらMessageも一緒に消えるという意味
+  // () => Channel ... このMessageはChannelに属する
+  // (channel) => channel.messages ... channelは複数のMessagesを持つという意味
   @ManyToOne(() => Channel, (channel) => channel.messages, {
     onDelete: 'CASCADE',
   })
