@@ -71,7 +71,7 @@ workspaceUserController.post('/:workspaceId', Auth, async (req: Request, res: Re
       return;
     }
 
-    // 新しいワークスペースユーザーを作成。新しいユーザーを登録する処理
+    // 新しいワークスペースユーザーを作成。新しいユーザーを登録するオブジェクトの配列を作成
     const workspaceUsers = newUserIds.map((userId) => ({
       userId,
       workspaceId,

@@ -19,7 +19,7 @@ import { Workspace } from '../workspaces/workspace.entity';
 import { Message } from '../messages/message.entity';
 import { WorkspaceUser } from '../workspace-users/workspace-user.entity';
 
-// ✅　TypeORN
+// ✅　TypeORM
 
 // 👉 本来のSQLでDBを作る場合
 // CREATE TABLE users (
@@ -54,13 +54,19 @@ export class User {  // テーブル定義開始
   @Column({ nullable: true })
   thumbnailUrl?: string;
 
-  // @OneToMany → 1人のUserは複数Messageを持つ。
+  // ✅ リレーションを定義 → TypeORMに“関係性のルールを教えている
+  // OneToMany → このUserから見える複数の関連データを定義しているだけ
+  // () => Workspace ... 関係先は Workspace テーブル
+  // (obj) => obj.adminUser ... objは、workspaceのadminUserのこと                  
+  // { cascade: true } ... Userを保存したとき、関連するWorkspaceも一緒に保存・更新する
   @OneToMany(() => Workspace, (obj) => obj.adminUser, { cascade: true })
   adminWorkspaces?: Workspace[];
 
   @OneToMany(() => WorkspaceUser, (obj) => obj.user, { cascade: true })
   workspaceUsers?: WorkspaceUser[];
 
+  // UserはMessageテーブルに属する
+  // Message側で、Userと繋がっているプロパティは、user という意味
   @OneToMany(() => Message, (message) => message.user)
   messages?: Message[];
 

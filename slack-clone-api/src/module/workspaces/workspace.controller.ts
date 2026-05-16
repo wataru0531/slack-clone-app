@@ -1,3 +1,6 @@
+
+// module/workspace/workspace.controller.ts
+
 import { Router, Request, Response } from 'express';
 import datasource from '../../datasource';
 import { Workspace } from './workspace.entity';
@@ -9,7 +12,8 @@ const workSpaceController = Router();
 const workspaceRepository = datasource.getRepository(Workspace);
 const workspaceUserRepository = datasource.getRepository(WorkspaceUser);
 const channelRepository = datasource.getRepository(Channel);
-// ユーザーが所属するワークスペースを取得
+
+// ✅ ユーザーが所属するワークスペースを取得
 workSpaceController.get('/', Auth, async (req: Request, res: Response) => {
   try {
     const workspaces = await workspaceRepository.find({
@@ -24,7 +28,7 @@ workSpaceController.get('/', Auth, async (req: Request, res: Response) => {
   }
 });
 
-// 特定のワークスペースを取得
+// ✅ 特定のワークスペースを取得
 workSpaceController.get('/:id', Auth, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
