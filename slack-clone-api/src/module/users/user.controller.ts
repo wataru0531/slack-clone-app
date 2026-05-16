@@ -22,10 +22,9 @@ userController.get('/', Auth, async (req: Request, res: Response) => {
       res.status(400).json({ message: '検索キーワードを指定してください' });
       return;
     }
-
+    
     // DB検索
     const users = await userRepository.find({
-
       // where: [ 条件1, 条件2 ] ... 検索条件を定義
       // ここでは、1つの検索文字を、name と email の両方に対して使う。
       // → Google検索のようにタイトル、本文、URLなど全てから探すのと同じ

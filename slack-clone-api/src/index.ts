@@ -11,7 +11,6 @@
 // ここでは、HTTPサーバーでExpresサーバーをラップして、リクエスト処理はExpressに任せる一方で、
 // HTTPサーバーを作っているのはWebSocket.IOを使えるようにしている。
 
-
 //               HTTP通信
 // ブラウザ  ─────────────────→ Node HTTP Server
 //                                   │
@@ -21,7 +20,6 @@
 //                                   │               └─ JSON処理
 //                                   │
 //                                   └─ WebSocket → Socket.IO
-
 
 // ✅ Node.js HTTP Server
 //   ・TCP通信受付
