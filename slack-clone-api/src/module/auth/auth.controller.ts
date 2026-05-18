@@ -28,10 +28,8 @@ authController.post('/signup', async (req: Request, res: Response) => {
     // useRepository → Userテーブル操作オブジェクトを生成
     // findOne → SQL的に言うと、SELECT * FROM user WHERE email = ? LIMIT 1
     const existingUser = await userRepository.findOne({ where: { email } });
-    if (existingUser) {
-      res
-        .status(400)
-        .json({ message: 'このメールアドレスは既に使用されています' });
+    if(existingUser) {
+      res.status(400).json({ message: 'このメールアドレスは既に使用されています' });
       return;
     }
 

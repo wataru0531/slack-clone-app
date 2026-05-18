@@ -1,3 +1,8 @@
+
+// /pages/Home/WorkspaceSelector/CreateWorkspaceModal';
+
+// 新しいワークスペースを作成するモーダル
+
 function CreateWorkspaceModal() {
   return (
     <div className="profile-modal-overlay">
