@@ -2,6 +2,7 @@
 // /modules/auth/auth.repository.ts
 
 import api from "../../lib/api";
+import { User } from "./users/user.entity";
 // ↓
 // const baseURL = import.meta.env.VITE_API_URL;
 // const api = axios.create({ baseURL: baseURL })
@@ -10,8 +11,12 @@ import api from "../../lib/api";
 // 認証周りのAPIをまとめたファイル
 
 export const authRepository = {
-  // ✅ 登録
-  async signup(name: string, email: string, password: string) {
+  // ✅ ユーザー登録
+  async signup(
+    name: string, 
+    email: string, 
+    password: string
+  ): Promise<{ user: User, token: string }> {
     const result = await api.post("/auth/signup", {
       name,
       email,
@@ -20,8 +25,21 @@ export const authRepository = {
     
     const { user, token } = result.data;
 
-    return { user, token };
+    return { user: new User(user), token };
+  },
+
+  // ✅ ログイン
+  async signin(
+    email: string, 
+    password: string): Promise<{ user: User, token: string }>{
+    const result = await api.post(`/auth/signin`, { email, password });
+    const { user, token } = result.data;
+
+    return { user: new User(user), token: token }
   }
+
+
+
 
 
 }
