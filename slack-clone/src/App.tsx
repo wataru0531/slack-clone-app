@@ -7,9 +7,36 @@ import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
 import CreateWorkspace from "./pages/CreateWorkspace";
 import Home from "./pages/Home";
+import { useEffect, useState } from "react";
+import { useCurrentUserStore } from "./modules/auth/current-user.state";
+import { authRepository } from "./modules/auth/auth.repository";
 
 
 function App() {
+  // ✅ アプリ起動時に毎回ローカルストレージのtokenを取り出して、
+  //    それを使いapiに投げて、ログインユーザーのデータを取り出す。
+  const [ isLoading, setIsloading ] = useState(true);
+  const { setCurrentUser } = useCurrentUserStore();
+
+  // ログインしているユーザーデータを取得
+  const fetchCurrentUser = async () => {
+    try {
+      const user = await authRepository.getCurrentUser();
+      setCurrentUser(user);
+
+    } catch(e) {
+      console.error("ログインユーザーのデータ取得に失敗しました。", e);
+    } finally {
+      setIsloading(false);
+    }
+    
+  }
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
+
+  if(isLoading) return <div>Loading...</div>
 
   return (
     <BrowserRouter>

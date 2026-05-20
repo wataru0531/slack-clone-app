@@ -2,10 +2,11 @@
 // /pages/Signup/index.tsx
 // ✅ ユーザー登録ページ
 
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import './auth.css';
 import { useState } from 'react';
 import { authRepository } from '../../modules/auth/auth.repository';
+import { useCurrentUserStore } from '../../modules/auth/current-user.state';
 
 
 function Signup() {
@@ -14,6 +15,8 @@ function Signup() {
   const [ password, setPassword ] = useState("");
   const [ isLoading, setIsLoading ] = useState(false);
   const [ error, setError ] = useState<string | null>(null);
+
+  const { currentUser ,setCurrentUser } = useCurrentUserStore();
 
   const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,9 +34,10 @@ function Signup() {
       // User {id: 'd316d852-e195-47e1-bfc8-a9779ee55829', name: 'wataru', email: 'obito@gmail.com', thumbnailUrl: null, createdAt: '2026-05-19T08:00:34.000Z', …}
       // 'eyJhbGciOiJIUzI1NiJ9.ZDMxNmQ4NTItZTE5NS00N2UxLWJmYzgtYTk3NzllZTU1ODI5.BWvWAx0Ym2a7_z-jtEGtfki9Gz4tPjHWVAKzYojgxJI'
       // Header(トークンの種類など)、Payload(データ)、Signature(改竄防止のための署名)の3つで構成
+      
+      localStorage.setItem("token", token); // ローカルストレージに保存
 
-      // 👉 ここでログイン状態保存、維持
-
+      setCurrentUser(user); // グローバルステートを更新
 
     } catch(e) {
       setError("登録に失敗しました。");
@@ -41,9 +45,9 @@ function Signup() {
     } finally {
       setIsLoading(false);
     }
-
   }
 
+  if(currentUser != null) return <Navigate to="/" />
 
   return (
     <div className="signup-container">

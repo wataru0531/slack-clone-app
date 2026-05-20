@@ -99,10 +99,11 @@ authController.post('/signin', async (req: Request, res: Response) => {
 });
 
 
-// 現在ログインしているユーザー情報取得
+// ✅ 現在ログインしているユーザー情報取得
 authController.get('/me', async (req: Request, res: Response) => {
   try {
-    if (req.currentUser == null) {
+    // 👉 set-current-user.tsで、ログインユーザーのreqにのせている
+    if(req.currentUser == null) {
       res.status(200).json(null);
       return;
     }

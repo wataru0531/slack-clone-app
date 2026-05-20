@@ -3,19 +3,21 @@
 // ✅ ログインページ
 
 
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import '../Signup/auth.css';
 import { useState } from 'react';
 import { authRepository } from '../../modules/auth/auth.repository';
-
+import { useCurrentUserStore } from '../../modules/auth/current-user.state';
 
 
 function Signin() {
-  // const [ name, setName ] = useState("");
   const [ email, setEmail ] = useState("");
   const [ password, setPassword ] = useState("");
   const [ isLoading, setIsLoading ] = useState(false);
   const [ error, setError ] = useState("");
+
+  const { currentUser, setCurrentUser } = useCurrentUserStore();
+
 
   // ✅ ログインの処理
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,17 +33,20 @@ function Signin() {
       // User {id: '04b85ef1-c8c7-4897-90f1-89ac530e4700', name: 'yasukawa wataru', email: 'obito0531@gmail.com', thumbnailUrl: null, createdAt: '2026-05-19T07:33:23.000Z', …} 
       // 'eyJhbGciOiJIUzI1NiJ9.MDRiODVlZjEtYzhjNy00ODk3LTkwZjEtODlhYzUzMGU0NzAw.PzNYek5BaqTVV_qOFKvrkuHxBkuNf0gqJLAvBpqViPY'
 
+      localStorage.setItem("token", token); // ローカルストレージに保存
+
+      setCurrentUser(user); // グローバルステートを更新
+
     } catch(e) {
       setError("ログインに失敗しました。");
       console.error("ログインに失敗しました", e);
     } finally {
       setIsLoading(false);
     }
-
-
   }
 
-
+  // console.log(currentUser);
+  if(currentUser != null) return <Navigate to="/" />
 
   return (
     <div className="signup-container">
