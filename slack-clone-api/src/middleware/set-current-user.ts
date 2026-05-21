@@ -8,7 +8,9 @@ import datasource from '../datasource';
 import { User } from '../module/users/user.entity';
 import { decodeJwt } from '../lib/jwt';
 
-// 
+// ✅ リクエストからJWTトークンを取り出し、そこからログインしているユーザーデータを取得
+// → req.currentUserに入れる。
+// フロントのaxiosに必ずブラウザのtokenを取得して、サーバーに投げる処理をかましている。
 export default async (req: Request, _res: Response, next: NextFunction) => {
   const token = _getTokenFromHeader(req); // 渡ってきたBearerトークンを取得
 
