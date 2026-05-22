@@ -1,9 +1,20 @@
 
 // /pages/Home/WorkspaceSelector/CreateWorkspaceModal';
 
+import { useState } from "react";
+
 // 新しいワークスペースを作成するモーダル
 
-function CreateWorkspaceModal() {
+type CreateWorkspaceModalProps = {
+  createWorkspace: (name: string) => void;
+  allowCancel?: boolean; // キャンセルボタンを表示するかどうか
+}
+
+
+// ✅ TODO リファクタリング。Formに変更
+function CreateWorkspaceModal({ createWorkspace, allowCancel }: CreateWorkspaceModalProps) {
+  const [ workspaceName, setWorkspaceName ] = useState(""); 
+
   return (
     <div className="profile-modal-overlay">
       <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
@@ -22,6 +33,8 @@ function CreateWorkspaceModal() {
                 className="profile-input"
                 placeholder="新しいワークスペース名を入力してください"
                 autoFocus
+                value={ workspaceName }
+                onChange={(e:React.ChangeEvent<HTMLInputElement>) => setWorkspaceName(e.target.value)}
               />
               <div className="help-text">
                 チームやプロジェクトの名前など、ワークスペースの用途がわかりやすい名前を設定してください。
@@ -31,8 +44,16 @@ function CreateWorkspaceModal() {
         </div>
 
         <div className="profile-modal-footer">
-          <button className="cancel-button">キャンセル</button>
-          <button className="save-button">作成</button>
+          {
+            allowCancel && (
+              <button className="cancel-button">キャンセル</button>
+            )
+          }
+          
+          <button 
+            className="save-button"
+            onClick={ () => createWorkspace(workspaceName) }
+          >作成</button>
         </div>
       </div>
     </div>

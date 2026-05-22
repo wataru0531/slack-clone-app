@@ -30,7 +30,7 @@ function Signup() {
       setError(null);
 
       const { user, token } = await authRepository.signup(name, email, password);
-      console.log(user, token);
+      // console.log(user, token);
       // User {id: 'd316d852-e195-47e1-bfc8-a9779ee55829', name: 'wataru', email: 'obito@gmail.com', thumbnailUrl: null, createdAt: '2026-05-19T08:00:34.000Z', …}
       // 'eyJhbGciOiJIUzI1NiJ9.ZDMxNmQ4NTItZTE5NS00N2UxLWJmYzgtYTk3NzllZTU1ODI5.BWvWAx0Ym2a7_z-jtEGtfki9Gz4tPjHWVAKzYojgxJI'
       // Header(トークンの種類など)、Payload(データ)、Signature(改竄防止のための署名)の3つで構成
@@ -48,6 +48,7 @@ function Signup() {
   }
 
   if(currentUser != null) return <Navigate to="/" />
+  // null、undefinedでもないならなる
 
   return (
     <div className="signup-container">

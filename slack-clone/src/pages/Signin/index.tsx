@@ -36,6 +36,8 @@ function Signin() {
       localStorage.setItem("token", token); // ローカルストレージに保存
 
       setCurrentUser(user); // グローバルステートを更新
+                            // → Jotaiの状態を更新 → Signinコンポーネントを再レンダリング
+                            // → <Navigate to="/">が発火して、/ に遷移
 
     } catch(e) {
       setError("ログインに失敗しました。");

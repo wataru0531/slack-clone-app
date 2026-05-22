@@ -23,7 +23,7 @@ import type { User } from "../users/user.entity";
 
 const currentUserAtom = atom<User>(); // これ単位1つで管理
 
-// ✅ カスタムフック化して、ログインユーザー、更新関数を取得
+// ✅ カスタムフック化して、ログインユーザー、更新用関数を取得
 export const useCurrentUserStore = () => {
 
   const [ currentUser, setCurrentUser ] = useAtom(currentUserAtom);

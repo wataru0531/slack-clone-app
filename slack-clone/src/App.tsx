@@ -15,7 +15,7 @@ import { authRepository } from "./modules/auth/auth.repository";
 function App() {
   // ✅ アプリ起動時に毎回ローカルストレージのtokenを取り出して、
   //    それを使いapiに投げて、ログインユーザーのデータを取り出す。
-  const [ isLoading, setIsloading ] = useState(true);
+  const [ isLoading, setIsLoading ] = useState(true);
   const { setCurrentUser } = useCurrentUserStore();
 
   // ログインしているユーザーデータを取得
@@ -27,9 +27,8 @@ function App() {
     } catch(e) {
       console.error("ログインユーザーのデータ取得に失敗しました。", e);
     } finally {
-      setIsloading(false);
+      setIsLoading(false);
     }
-    
   }
 
   useEffect(() => {

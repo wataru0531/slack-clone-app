@@ -48,10 +48,10 @@ workSpaceController.get('/:id', Auth, async (req: Request, res: Response) => {
   }
 });
 
-// ワークスペースを作成
+// ✅ ワークスペースを作成
 workSpaceController.post('/', Auth, async (req: Request, res: Response) => {
   try {
-    const { name } = req.body;
+    const { name } = req.body; // ワークスペース名
 
     if (!name) {
       res.status(400).json({ message: 'ワークスペース名は必須です' });
@@ -64,7 +64,8 @@ workSpaceController.post('/', Auth, async (req: Request, res: Response) => {
       adminUserId: req.currentUser.id,
     });
 
-    // 最初の一つのチャンネルを作成
+    // デフォルトで1つのチャンネルを作っておく
+    // 👉 ワークスペースを作った時に、何もチェンネルがないのはおかしいため。
     const channel = await channelRepository.save({
       name: 'general',
       workspaceId: workspace.id,
@@ -116,10 +117,7 @@ workSpaceController.patch('/:id', Auth, async (req: Request, res: Response) => {
 });
 
 // ワークスペースを削除
-workSpaceController.delete(
-  '/:id',
-  Auth,
-  async (req: Request, res: Response) => {
+workSpaceController.delete('/:id', Auth, async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
 
