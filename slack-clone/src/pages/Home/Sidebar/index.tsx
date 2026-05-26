@@ -1,11 +1,51 @@
-import CreateChannelModal from './CreateChannelModal';
-import UserSearchModal from './UserSearchModal';
 
-function Sidebar() {
+// pages/Home/Sidebar/index.ts
+
+// ✅ 左から2番目のサイドバー
+// 現在開いているワークスペース名、チャンネル
+
+import { Navigate, useNavigate } from 'react-router-dom';
+import { channelRepository } from '../../../modules/channels/channel.repository';
+import { useUiStore } from '../../../modules/ui/ui.state';
+import type { Workspace } from '../../../modules/workspaces/workspace.entity';
+import CreateChannelModal from './CreateChannelModal';
+
+
+type SidebarProps = {
+  selectedWorkspace: Workspace;
+}
+
+function Sidebar({ selectedWorkspace }: SidebarProps) {
+  // console.log(selectedWorkspace);
+  // Workspace {id: '3c0c3995-e7de-40ac-bb91-ede59585fb14', name: 'project-05-25', channels: Array(1), adminUserId: '04b85ef1-c8c7-4897-90f1-89ac530e4700', createdAt: '2026-05-25T09:13:27.000Z', …}
+
+  const { showCreateChannelModal, setShowCreateChannelModal } = useUiStore();
+  // console.log(showCreateChannelModal);
+  const navigate = useNavigate();
+
+  // ✅ チャンネルを作成する関数 TODO ちゃんとした形に
+  const createChannel = async (name: string) => {
+    try {
+      const newChannel = await channelRepository.create(selectedWorkspace.id, name);
+      // console.log(newChannel);
+      // Channel {id: '7de4e967-0b23-454d-b08c-553073432982', name: 'newChanel', workspaceId: '19c69194-d1de-46da-8ee6-06425b51a53c', createdAt: '2026-05-26T08:52:38.000Z', updatedAt: '2026-05-26T08:52:38.000Z'}
+
+      setShowCreateChannelModal(false);
+
+      navigate(`/${selectedWorkspace.id}/${newChannel.id}`);
+
+    } catch(error) {
+      console.error("チャンネルの作成に失敗しました。", error);
+    } finally {
+      console.log("finally"); // ローディング処理を止める
+    }
+  }
+
+
   return (
     <div className="sidebar">
       <div className="workspace-header">
-        <h2>{'test'}</h2>
+        <h2>{ selectedWorkspace.name }</h2>
       </div>
       <div className="sidebar-section">
         <div className="section-header channels-header">
@@ -22,7 +62,9 @@ function Sidebar() {
           <li key={1} className={'active'}>
             <span className="channel-icon">#</span> {'test'}
           </li>
-          <li>
+
+          {/* 追加ボタン */}
+          <li onClick={ () => setShowCreateChannelModal(true) }>
             <span className="channel-icon add">+</span> Add channels
           </li>
         </ul>
@@ -31,7 +73,16 @@ function Sidebar() {
           <span className="channel-icon add">+</span> Invite Pepole
         </div>
       </div>
-      {/* <CreateChannelModal /> */}
+
+      {/* チェンネルを作成するモーダル */}
+      {
+        showCreateChannelModal && (
+          <CreateChannelModal 
+            createChannel={ createChannel }
+          />
+        )
+      }
+
       {/* <UserSearchModal /> */}
     </div>
   );

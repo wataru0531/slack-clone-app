@@ -7,7 +7,6 @@
 import { atom, useAtom } from "jotai";
 import type { User } from "../users/user.entity";
 
-
 // export class User {
 //   id!: string;
 //   name!: string;

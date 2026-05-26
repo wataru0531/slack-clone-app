@@ -1,3 +1,7 @@
+
+
+// /pages/Home/WorkspaceSelector/ProfileModal.tsx
+
 function ProfileModal() {
   return (
     <div className="profile-modal-overlay">

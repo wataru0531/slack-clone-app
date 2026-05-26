@@ -1,23 +1,105 @@
-import CreateWorkspaceModal from './CreateWorkspaceModal';
-import ProfileModal from './ProfileModal';
+// /pages/WorkspaceSelector/index.ts
 
-function WorkspaceSelector() {
+// 左サイドバー
+// ワークスペースを選択するサイドバー
+
+import { useNavigate } from "react-router-dom";
+import { useUiStore } from "../../../modules/ui/ui.state";
+import CreateWorkspaceModal from "./CreateWorkspaceModal";
+import ProfileModal from "./ProfileModal";
+import { useState } from "react";
+import { workspaceRepository } from "../../../modules/workspaces/workspace.repository";
+import type { Workspace } from "../../../modules/workspaces/workspace.entity";
+
+type WorkspaceSelectorPropsType = {
+  workspaces: Workspace[];
+  workspaceId: string; // 現在表示しているワークスペースのid
+  addWorkspaces: (_newWorkspace: Workspace) => void;
+};
+
+function WorkspaceSelector({
+  workspaces,
+  workspaceId,
+  addWorkspaces,
+}: WorkspaceSelectorPropsType) {
+  // console.log(workspaces); // (17) [Workspace, Workspace, ...]
+  // console.log(workspaces[0]);
+  // → Workspace {id: 'd4e717d2-f836-425a-8456-1b69edcdb42b', name: 'Not Equal', adminUserId: '04b85ef1-c8c7-4897-90f1-89ac530e4700', createdAt: '2026-05-22T08:54:17.000Z', updatedAt: '2026-05-22T08:54:17.000Z',
+  //              channels: [{createdAt: "2026-05-22T08:54:17.000Z"id: "d2237004-a826-401e-b50c-a2b2e7698eb3"name: "general"updatedAt: "2026-05-22T08:54:17.000Z"workspaceId: "d4e717d2-f836-425a-8456-1b69edcdb42b"}]…}
+
+  // ワークスペースを作るときに表示するモーダルを表示するどうかのフラグ
+  const { showCreateWorkspaceModal, setShowCreateWorkspaceModal } =
+    useUiStore();
+  const [isCreatingWorkspaceLoading, setIsCreatingWorkspaceLoading] =
+    useState(false);
+  const [createWorkspaceError, setCreateWorkspaceError] = useState("");
+
+  const navigate = useNavigate();
+
+  // ✅ ワークスペースを作成する処理
+  const createWorkspace = async (name: string): Promise<boolean> => {
+    const trimmedName = name.trim();
+    if (trimmedName === "") return;
+    if (isCreatingWorkspaceLoading) return;
+
+    try {
+      setCreateWorkspaceError("");
+      setIsCreatingWorkspaceLoading(true);
+      const newWorkspace = await workspaceRepository.create(trimmedName);
+      // console.log(newWorkspace);
+      // → Workspace {id: 'd4e717d2-f836-425a-8456-1b69edcdb42b', name: 'Not Equal', adminUserId: '04b85ef1-c8c7-4897-90f1-89ac530e4700', createdAt: '2026-05-22T08:54:17.000Z', updatedAt: '2026-05-22T08:54:17.000Z',
+      //              channels: [{createdAt: "2026-05-22T08:54:17.000Z"id: "d2237004-a826-401e-b50c-a2b2e7698eb3"name: "general"updatedAt: "2026-05-22T08:54:17.000Z"workspaceId: "d4e717d2-f836-425a-8456-1b69edcdb42b"}]…}
+
+      addWorkspaces(newWorkspace);
+
+      setShowCreateWorkspaceModal(false); // モーダルを閉じる
+
+      // ワークスペース作成後、そのワークスペースのページに遷移
+      // <Route path="/:workspaceId/:channelId" element={ <Home /> } />
+      // 遷移先例 : http://localhost:5173/ade88324-a6a3-47d2-99c5-baebb338d19c/fab52aed-865c-47ee-8c66-c5a6f83b9ad8
+      navigate(`/${newWorkspace.id}/${newWorkspace.channels[0].id}`);
+
+      return true;
+    } catch (e) {
+      console.error("ワークスペースの作成に失敗しました。", e);
+      setCreateWorkspaceError("ワークスペースの作成に失敗しました。");
+      return false;
+    } finally {
+      setIsCreatingWorkspaceLoading(false);
+    }
+  };
+
   return (
     <div className="workspace-selector">
+      {/* 左サイドバー。ワークスペース選択、クリック時に遷移 */}
       <div className="workspaces">
-        <div key={1} className={'workspace-icon'}>
-          A
+        {workspaces.map((workspace) => (
+          <div
+            key={workspace.id}
+            className={`workspace-icon ${workspace.id === workspaceId ? "active" : ""}`}
+            onClick={() =>
+              navigate(`/${workspace.id}/${workspace.channels[0].id}`)
+            }
+            // style={ workspace.id === workspaceId ? { backgroundColor: "#5865f2" } : {} }
+          >
+            {workspace.name.charAt(0)}
+          </div>
+        ))}
+
+        <div
+          className="workspace-icon add"
+          onClick={() => setShowCreateWorkspaceModal(true)}
+        >
+          +
         </div>
-        <div key={2} className={'workspace-icon'}>
-          B
-        </div>
-        <div className="workspace-icon add">+</div>
       </div>
+
+      {/* アバター、ログアウト */}
       <div className="user-profile">
         <div className={`avatar-img `}>
           <img
             src={
-              'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png'
+              "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
             }
             alt="Posted image"
             className="message-image"
@@ -41,7 +123,19 @@ function WorkspaceSelector() {
           </svg>
         </div>
       </div>
-      {/* <CreateWorkspaceModal /> */}
+
+      {
+        // ワークスペースを作成するモーダル
+        showCreateWorkspaceModal && (
+          <CreateWorkspaceModal
+            createWorkspace={createWorkspace}
+            allowCancel={true}
+            isCreatingWorkspaceLoading={isCreatingWorkspaceLoading}
+            createWorkspaceError={createWorkspaceError}
+          />
+        )
+      }
+
       {/* <ProfileModal /> */}
     </div>
   );
