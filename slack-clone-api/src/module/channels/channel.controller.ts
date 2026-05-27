@@ -129,9 +129,15 @@ channelController.delete('/:id', Auth, async (req: Request, res: Response) => {
       return;
     }
 
+    const deleteChannel = existingChannel;
+
     await channelRepository.delete(id);
 
-    res.status(200).json({ message: 'チャンネルを削除しました' });
+    res.status(200).json({ 
+      message: 'チャンネルを削除しました',
+      channel: deleteChannel,
+    });
+
   } catch (error) {
     console.error('チャンネル削除エラー:', error);
     res.status(500).json({ message: 'サーバーエラーが発生しました' });
