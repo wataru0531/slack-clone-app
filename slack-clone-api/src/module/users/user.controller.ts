@@ -14,6 +14,8 @@ const userRepository = datasource.getRepository(User);
 
 // ✅ ログイン中の自分以外のユーザーを、名前やメールで部分一致検索するAPI
 // /users?keyword=taro
+// const result = await api.get("/users", { params: { keyword } }); フロントでたたく
+
 userController.get('/', Auth, async (req: Request, res: Response) => {
   try {
     const { keyword } = req.query;
