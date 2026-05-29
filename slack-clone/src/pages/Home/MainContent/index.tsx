@@ -1,17 +1,65 @@
 
+// /pages/Home/MainContent/index.tsx
+
+import { useNavigate } from "react-router-dom";
+import type { Channel } from "../../../modules/channels/channel.entity";
+import { channelRepository } from "../../../modules/channels/channel.repository";
 
 
-function MainContent() {
+type MainContentPropsType = {
+  selectedChannel: Channel;
+  channels: Channel[];
+  channelId: string;
+  workspaceId: string;
+  deleteChannel: (channelId: string) => Channel[];
+}
+
+
+function MainContent({ 
+  selectedChannel,
+  channels,
+  channelId,
+  workspaceId,
+  deleteChannel, // 👉 保持しているチャンネルを更新する関数
+}: MainContentPropsType) {
+  const navigate = useNavigate();
+
+  // ✅ 削除する処理
+  const onClickDeleteChannel = async () => {
+    try {
+      const confirmed = window.confirm("このチャンネルを削除しますか？この操作は取り消せません。")
+      // console.log(confirmed); // OKをクリックするとtrue。
+
+      // セクション6 34
+      if(!confirmed) return;
+
+      const response = await channelRepository.delete(channelId);
+        // console.log(response); // {id: 'fc1161fd-d1ce-4dcb-a977-ea988578f908', name: 'チャンネル７', workspaceId: '286d8306-bf21-4ce0-9063-b01b4807a5e7', createdAt: '2026-05-27T09:22:30.000Z', updatedAt: '2026-05-27T09:22:30.000Z'}
+
+      const updatedChannels = deleteChannel(response.id); // 👉 保持しているチャンネルを更新する関数
+      
+      if(updatedChannels.length === 0) { // バックエンドでもガードしているが、フロントでもガード
+        navigate("/");
+        return;
+      }
+
+      navigate(`/${workspaceId}/${updatedChannels[0].id}`); // 遷移
+    } catch(error) {
+      console.error("チャンネルの削除に失敗しました。", error);
+    }
+  }
+
   return (
     <div className="main-content">
       <header className="channel-header">
         <div className="channel-info">
-          <h2># {'test'}</h2>
+          <h2>#{ selectedChannel.name }</h2>
         </div>
         <div className="channel-actions">
+          {/* 削除ボタン */}
           <button
             className="delete-channel-button"
-            onClick={() => {}}
+            onClick={ onClickDeleteChannel }
             title="チャンネルを削除"
           >
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -20,6 +68,7 @@ function MainContent() {
           </button>
         </div>
       </header>
+
       <div
         className="messages-container"
         style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 150px)' }}

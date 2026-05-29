@@ -1,6 +1,4 @@
 
-
-
 // modules/users/user.entity.ts
 
 // userに関する型、クラス
@@ -25,6 +23,13 @@ export class User {
   constructor(data: User) {
     // 渡されたデータを、このクラスの中にそのままコピーしている
     Object.assign(this, data);
+  }
+
+  // ゲッター → user.iconUrlでreturnする
+  get iconUrl(){
+    return (
+      this.thumbnailUrl || "/dummy-icon.avif"
+    )
   }
 }
 

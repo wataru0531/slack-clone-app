@@ -2,6 +2,11 @@
 // pages/Signin/index.tsx
 // ✅ ログインページ
 
+// 2つ目のアカウント
+// name: aaa
+// mail: aaa@gmail.com
+// pass: aaa
+
 
 import { Link, Navigate } from 'react-router-dom';
 import '../Signup/auth.css';
@@ -15,9 +20,7 @@ function Signin() {
   const [ password, setPassword ] = useState("");
   const [ isLoading, setIsLoading ] = useState(false);
   const [ error, setError ] = useState("");
-
   const { currentUser, setCurrentUser } = useCurrentUserStore();
-
 
   // ✅ ログインの処理
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,7 +38,7 @@ function Signin() {
 
       localStorage.setItem("token", token); // ローカルストレージに保存
 
-      setCurrentUser(user); // グローバルステートを更新
+      setCurrentUser(user); // 👉 グローバルステートを更新
                             // → Jotaiの状態を更新 → Signinコンポーネントを再レンダリング
                             // → <Navigate to="/">が発火して、/ に遷移
 

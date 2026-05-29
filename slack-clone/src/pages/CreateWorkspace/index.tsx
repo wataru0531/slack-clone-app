@@ -21,16 +21,16 @@ import { Workspace } from "../../modules/workspaces/workspace.entity";
 function CreateWorkspace() {
   const { currentUser } = useCurrentUserStore();
   const navigate = useNavigate();
-  const [isCreatingWorkspaceLoading, setIsCreatingWorkspaceLoading] =
+  const [ isCreatingWorkspaceLoading, setIsCreatingWorkspaceLoading ] =
     useState(false); // ローディング
-  const [createWorkspaceError, setCreateWorkspaceError] = useState("");
+  const [ createWorkspaceError, setCreateWorkspaceError ] = useState("");
 
-  const [isFetchingWorkspaceLoading, setIsFetchingWorkspaceLoading] =
+  const [ isFetchingWorkspaceLoading, setIsFetchingWorkspaceLoading ] =
     useState(true); // ローディング
-  const [fetchWorkspacesError, setFetchWorkspacesError] = useState("");
+  const [ fetchWorkspacesError, setFetchWorkspacesError ] = useState("");
 
   // ログインユーザーが所属しているワークスペース
-  const [homeWorkspace, setHomeWorkspace] = useState<Workspace>();
+  const [ homeWorkspace, setHomeWorkspace ] = useState<Workspace>();
 
   // ログインしているユーザーの所属するワークスペースを返し、最初のワークスペースにリダイレクトさせる
   const fetchWorkspaces = async () => {

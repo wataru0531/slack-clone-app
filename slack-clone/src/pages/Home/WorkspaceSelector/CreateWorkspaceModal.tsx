@@ -88,7 +88,6 @@ function CreateWorkspaceModal({
               type="submit" // submit → エンターキーで発火可能
               className="save-button"
               disabled={ isCreatingWorkspaceLoading }
-              // onClick={ () => createWorkspace(workspaceName) }
             >
               { isCreatingWorkspaceLoading ? "isLoading..." : "Create" }
             </button>

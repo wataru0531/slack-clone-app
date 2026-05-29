@@ -10,6 +10,7 @@ import ProfileModal from "./ProfileModal";
 import { useState } from "react";
 import { workspaceRepository } from "../../../modules/workspaces/workspace.repository";
 import type { Workspace } from "../../../modules/workspaces/workspace.entity";
+import { useCurrentUserStore } from "../../../modules/auth/current-user.state";
 
 type WorkspaceSelectorPropsType = {
   workspaces: Workspace[];
@@ -28,13 +29,13 @@ function WorkspaceSelector({
   //              channels: [{createdAt: "2026-05-22T08:54:17.000Z"id: "d2237004-a826-401e-b50c-a2b2e7698eb3"name: "general"updatedAt: "2026-05-22T08:54:17.000Z"workspaceId: "d4e717d2-f836-425a-8456-1b69edcdb42b"}]…}
 
   // ワークスペースを作るときに表示するモーダルを表示するどうかのフラグ
-  const { showCreateWorkspaceModal, setShowCreateWorkspaceModal } =
-    useUiStore();
-  const [isCreatingWorkspaceLoading, setIsCreatingWorkspaceLoading] =
-    useState(false);
+  const { showCreateWorkspaceModal, setShowCreateWorkspaceModal } = useUiStore();
+  const [isCreatingWorkspaceLoading, setIsCreatingWorkspaceLoading] = useState(false);
   const [createWorkspaceError, setCreateWorkspaceError] = useState("");
 
   const navigate = useNavigate();
+
+  const { setCurrentUser } = useCurrentUserStore();
 
   // ✅ ワークスペースを作成する処理
   const createWorkspace = async (name: string): Promise<boolean> => {
@@ -69,6 +70,12 @@ function WorkspaceSelector({
     }
   };
 
+  // ✅ ログアウト
+  const logout = () => {
+    localStorage.removeItem("token");
+    setCurrentUser(undefined);
+  }
+
   return (
     <div className="workspace-selector">
       {/* 左サイドバー。ワークスペース選択、クリック時に遷移 */}
@@ -94,18 +101,23 @@ function WorkspaceSelector({
         </div>
       </div>
 
-      {/* アバター、ログアウト */}
+      
       <div className="user-profile">
+        {/* アバター、ログアウト */}
         <div className={`avatar-img `}>
           <img
-            src={
-              "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
-            }
+            src={"https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"}
             alt="Posted image"
             className="message-image"
           />
         </div>
-        <div className="logout-button" title="ログアウト">
+
+        {/* ログアウト */}
+        <div 
+          className="logout-button" 
+          title="ログアウト"
+          onClick={ logout }
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
