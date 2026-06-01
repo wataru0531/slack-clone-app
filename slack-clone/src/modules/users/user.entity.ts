@@ -1,6 +1,8 @@
 
 // modules/users/user.entity.ts
 
+import { WorkspaceUser } from "../workspaceUsers/workspace-user.entity";
+
 // userに関する型、クラス
 
 // ⭐️ APIやDBから取ってきたユーザーデータを、
@@ -18,11 +20,13 @@ export class User {
   name!: string;
   email!: string;
   // password!: string; // 👉 パスワードはセキュリティ上危ないので返ってこないようにする
+  workspaceUsers?: WorkspaceUser[];
   thumbnailUrl!: string;
 
   constructor(data: User) {
     // 渡されたデータを、このクラスの中にそのままコピーしている
     Object.assign(this, data);
+    this.workspaceUsers = data.workspaceUsers?.map((workspaceUser) => new WorkspaceUser(workspaceUser))
   }
 
   // ゲッター → user.iconUrlでreturnする

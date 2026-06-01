@@ -7,7 +7,7 @@
 import { useNavigate } from 'react-router-dom';
 import { channelRepository } from '../../../modules/channels/channel.repository';
 import { useUiStore } from '../../../modules/ui/ui.state';
-import type { Workspace } from '../../../modules/workspaces/workspace.entity';
+import { Workspace } from '../../../modules/workspaces/workspace.entity';
 import CreateChannelModal from './CreateChannelModal';
 import { useState } from 'react';
 import type { Channel } from '../../../modules/channels/channel.entity';
@@ -23,10 +23,10 @@ type SidebarProps = {
 
 
 function Sidebar({ 
-  selectedWorkspace, 
+  selectedWorkspace,
   channels,
-  channelId, 
-  addChannels 
+  channelId,
+  addChannels
 }: SidebarProps) {
   // console.log(selectedWorkspace);
   // Workspace {id: '3c0c3995-e7de-40ac-bb91-ede59585fb14', name: 'project-05-25', channels: Array(1), adminUserId: '04b85ef1-c8c7-4897-90f1-89ac530e4700', createdAt: '2026-05-25T09:13:27.000Z', …}
@@ -34,7 +34,7 @@ function Sidebar({
   const { 
     showCreateChannelModal, // チャンネル作成時に使うモーダル
     setShowCreateChannelModal,
-    showUserSearchModal, // 
+    showUserSearchModal, // ユーザー招待時に使うモーダル
     setShowUserSearchModal,
   } = useUiStore();
   // console.log(showCreateChannelModal);
@@ -60,11 +60,10 @@ function Sidebar({
       // Channel {id: '7de4e967-0b23-454d-b08c-553073432982', name: 'newChanel', workspaceId: '19c69194-d1de-46da-8ee6-06425b51a53c', createdAt: '2026-05-26T08:52:38.000Z', updatedAt: '2026-05-26T08:52:38.000Z'}
 
       addChannels(newChannel); // リアルタイムにチャンネルの並びを更新
-
+      
       setShowCreateChannelModal(false);
 
       navigate(`/${selectedWorkspace.id}/${newChannel.id}`);
-
     } catch(error) {
       console.error("チャンネルの作成に失敗しました。", error);
       setCreateChannelError("チャンネルの作成に失敗しました。");
@@ -134,10 +133,11 @@ function Sidebar({
       {/* ユーザーを招待するときに使うモーダル */}
       {
         showUserSearchModal && (
-          <UserSearchModal />
+          <UserSearchModal 
+            selectedWorkspace={ selectedWorkspace }
+          />
         )
       }
-      
     </div>
   );
 }

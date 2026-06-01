@@ -15,12 +15,17 @@ const showCreateChannelModalAtom = atom<boolean>(false);
 // ユーザーを招待する時に使うモーダルのフラグ
 const showUserSearchModalAtom = atom<boolean>(false);
 
+// プロフィールを変更する時に使うモーダルのフラグ
+const showProfileModalAtom = atom<boolean>(false);
+
 export const useUiStore = () => {
   const [ showCreateWorkspaceModal, setShowCreateWorkspaceModal ] = useAtom(showCreateWorkspaceModalAtom)
 
   const [ showCreateChannelModal, setShowCreateChannelModal ] = useAtom(showCreateChannelModalAtom);
 
   const [ showUserSearchModal, setShowUserSearchModal ] = useAtom(showUserSearchModalAtom);
+
+  const [ showProfileModal, setShowProfileModal ] = useAtom(showProfileModalAtom);
 
   return { 
     showCreateWorkspaceModal, // ワークスペースを制作時のモーダル
@@ -32,7 +37,8 @@ export const useUiStore = () => {
     showUserSearchModal, // ユーザーを招待する時に使うモーダル
     setShowUserSearchModal,
 
-
+    showProfileModal, // プロフィール変更する時に使うモーダルのフラグ
+    setShowProfileModal
   };
 }
 

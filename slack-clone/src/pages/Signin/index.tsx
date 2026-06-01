@@ -33,8 +33,6 @@ function Signin() {
 
       const { user, token } = await authRepository.signin(email, password);
       // console.log(user, token);
-      // User {id: '04b85ef1-c8c7-4897-90f1-89ac530e4700', name: 'yasukawa wataru', email: 'obito0531@gmail.com', thumbnailUrl: null, createdAt: '2026-05-19T07:33:23.000Z', …} 
-      // 'eyJhbGciOiJIUzI1NiJ9.MDRiODVlZjEtYzhjNy00ODk3LTkwZjEtODlhYzUzMGU0NzAw.PzNYek5BaqTVV_qOFKvrkuHxBkuNf0gqJLAvBpqViPY'
 
       localStorage.setItem("token", token); // ローカルストレージに保存
 

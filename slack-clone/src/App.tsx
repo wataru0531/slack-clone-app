@@ -22,6 +22,7 @@ function App() {
   const fetchCurrentUser = async () => {
     try {
       const user = await authRepository.getCurrentUser();
+      // console.log(user);
       setCurrentUser(user);
 
     } catch(e) {
