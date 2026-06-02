@@ -12,6 +12,11 @@ const userRepository = datasource.getRepository(User);
 
 
 // ✅ ログイン中ユーザーのプロフィール（名前・アイコン画像）を更新するAPI
+// const result = await api.putForm("/account/profile", { name, file });
+// HTTP的には、
+// PUT /account/profile
+// Content-Type: multipart/form-data が送られる。
+// サーバーから見ると、purFormでリクエストを受けても、putで受けることが可能
 accountController.put('/profile', Auth, async (req: Request, res: Response) => {
   // Auth → ミドルウェア。ログインしている人だけを通す
 
@@ -38,7 +43,7 @@ accountController.put('/profile', Auth, async (req: Request, res: Response) => {
     });
 
     // パスワードを除いたユーザー情報を返す
-    const { password, ...userWithoutPassword } = updatedUser;
+    const { password, ...userWithoutPassword } = updatedUser; // 分割代入でpasswordのみ外す
     res.status(200).json(userWithoutPassword);
   } catch (error) {
     console.error('プロフィール更新エラー:', error);
