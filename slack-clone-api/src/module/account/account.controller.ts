@@ -19,7 +19,7 @@ const userRepository = datasource.getRepository(User);
 // サーバーから見ると、purFormでリクエストを受けても、putで受けることが可能
 accountController.put('/profile', Auth, async (req: Request, res: Response) => {
   // Auth → ミドルウェア。ログインしている人だけを通す
-
+  
   try {
     const userId = req.currentUser.id; 
 
