@@ -16,6 +16,8 @@ import { Workspace } from "../../modules/workspaces/workspace.entity";
 import { workspaceRepository } from "../../modules/workspaces/workspace.repository";
 import type { Channel } from "../../modules/channels/channel.entity";
 import { channelRepository } from "../../modules/channels/channel.repository";
+import { Message } from "../../modules/messages/message.entity";
+import { messageRepository } from "../../modules/messages/message.repository";
 
 
 function Home() {
@@ -26,6 +28,7 @@ function Home() {
   // { workspaceId: '3c0c3995-e7de-40ac-bb91-ede59585fb14', channelId: '35356919-7e28-47ec-bd2f-2d4e3dd86cb3'}
   // → http://localhost:5173/3c0c3995-e7de-40ac-bb91-ede59585fb14/35356919-7e28-47ec-bd2f-2d4e3dd86cb3
   const [ channels, setChannels ] = useState<Channel[]>([])
+  const [ messages, setMessages ] = useState<Message[]>([])
 
   // ✅　現在表示しているワークスペースを取得
   const selectedWorkspace = workspaces.find((workspace) => {
@@ -87,6 +90,23 @@ function Home() {
                            // →  必ず1つはデータがあるように設定
   }
 
+  // ✅ 現在のワークスペースで、現在のチャンネルのメッセージをすべて保持
+  const fetchMessages = async () => {
+    try {
+      const messages = await messageRepository.find(workspaceId, channelId);
+
+      setMessages(messages);
+
+    } catch(error) {
+      console.error("メッセージの取得に失敗しました。", error);
+    }
+  }
+
+  // ✅ 保持しているMessageを更新する処理
+  const addMessages = (_message: Message) => {
+    setMessages(prevState => [...prevState, _message]);
+  }
+
   useEffect(() => {
     fetchWorkspaces();
   }, []);
@@ -94,6 +114,10 @@ function Home() {
   useEffect(() => {
     fetchChannels()
   }, [ workspaceId ]); // workspaceIdが切り替わるごとに、チャンネルを変える
+
+  useEffect(() => {
+    fetchMessages();
+  }, [ channelId ]); // チャンネルが変わるごとに、メッセージを取得
 
   if (currentUser == null) return <Navigate to="/signin" />;
 
@@ -108,18 +132,23 @@ function Home() {
 
       {selectedWorkspace != null && selectedChannel != null ? (
         <>
+          {/* サイドバー */}
           <Sidebar 
             selectedWorkspace={ selectedWorkspace }
             channels={ channels } // ワークスペースに属しているチャネル
             channelId={ channelId } // いま開いているチャンネル
             addChannels={ addChannels } // 保持しているチャンネルを更新
           />
+          
+          {/* メインコンテンツ */}
           <MainContent
             selectedChannel={ selectedChannel }
             channels={ channels }
             channelId={ channelId }
             workspaceId={ workspaceId }
             deleteChannel={ deleteChannel }
+            messages={ messages }
+            addMessages={ addMessages }
           />
         </>
       ) : (

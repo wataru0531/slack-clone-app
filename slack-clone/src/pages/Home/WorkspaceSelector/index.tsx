@@ -37,12 +37,12 @@ function WorkspaceSelector({
     showProfileModal, // プロフィール変更時のモーダルのフラグ
     setShowProfileModal,
   } = useUiStore();
-  const [isCreatingWorkspaceLoading, setIsCreatingWorkspaceLoading] = useState(false);
-  const [createWorkspaceError, setCreateWorkspaceError] = useState("");
+  const [ isCreatingWorkspaceLoading, setIsCreatingWorkspaceLoading ] = useState(false);
+  const [ createWorkspaceError, setCreateWorkspaceError ] = useState("");
 
   const navigate = useNavigate();
 
-  const { setCurrentUser } = useCurrentUserStore();
+  const { currentUser, setCurrentUser } = useCurrentUserStore();
 
   // ✅ ワークスペースを作成する処理
   const createWorkspace = async (name: string): Promise<boolean> => {
@@ -115,7 +115,8 @@ function WorkspaceSelector({
           onClick={() => setShowProfileModal(true)}
         >
           <img
-            src={"https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"}
+            // サムネイルurlか、デフォルトのアイコン画像を返す。getterの設定
+            src={ currentUser!.iconUrl }
             alt="Posted image"
             className="message-image"
           />

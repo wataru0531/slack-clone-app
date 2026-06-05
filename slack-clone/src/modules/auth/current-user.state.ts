@@ -1,5 +1,4 @@
 
-
 // /modules/auth/current-user.state.ts
 
 // ✅ ユーザーに関する状態を管理
