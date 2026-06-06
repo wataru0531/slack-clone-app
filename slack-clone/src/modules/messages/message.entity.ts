@@ -58,6 +58,17 @@ export class Message {
     });
   }
 
+  // ✅ 日付を、2026/06/04 18:25:09 の型に変換。時間まで追加
+  get dateTimeString() {
+    return this.createdAt.toLocaleString("ja-JP", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+  }
 
 }
 

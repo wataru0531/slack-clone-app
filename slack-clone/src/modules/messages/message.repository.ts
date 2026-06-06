@@ -43,7 +43,22 @@ export const messageRepository = {
     });
     
     return new Message(result.data); // Messageの型にして返す
-  }
+  },
+  
+  // ✅ 画像の送信
+  async uploadImage(
+    workspaceId: string,
+    channelId: string,
+    file: File
+  ) {
+    const result = await api.postForm(`/messages/${workspaceId}/${channelId}/image`, { 
+        file: file,
+      }
+    );
+    
+    return new Message(result.data);
+  },
+
 
 
 

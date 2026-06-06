@@ -104,7 +104,7 @@ function Home() {
 
   // ✅ 保持しているMessageを更新する処理
   const addMessages = (_message: Message) => {
-    setMessages(prevState => [...prevState, _message]);
+    setMessages(prevState => [_message, ...prevState]);
   }
 
   useEffect(() => {
