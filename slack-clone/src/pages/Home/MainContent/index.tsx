@@ -19,6 +19,7 @@ type MainContentPropsType = {
   deleteChannel: (channelId: string) => Channel[];
   messages: Message[];
   addMessages: (_message: Message) => void;
+  deleteMessageById: (_messageId: string) => void;
 }
 
 
@@ -30,6 +31,8 @@ function MainContent({
   deleteChannel, // 👉 保持しているチャンネルを更新する関数
   messages,
   addMessages, // 保持しているメッセージを更新する処理
+  deleteMessageById,
+
 }: MainContentPropsType) {
   const navigate = useNavigate();
   const [ content, setContent ] = useState("");
@@ -85,7 +88,8 @@ function MainContent({
 
   // ✅ 画像のアップロード処理
   const uploadImage = async(e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e);
+    // console.log(e.target.files); 
+    // FileList {0: {name: 'yamamoto.avif', lastModified: 1779545585542, lastModifiedDate: Sat May 23 2026 23:13:05 GMT+0900 (日本標準時), webkitRelativePath: '', size: 6107, , length: 1}
 
     try {
       if(e.target.files === null || e.target.files[0] == null) return;
@@ -102,10 +106,7 @@ function MainContent({
     } catch(error) {
       console.error("画像のアップロードに失敗しました。", error);
     }
-
   }
-
-
 
   // ✅ 日付ごとにメッセージのオブジェクトを格納して、配列を作る
   // console.log(messages); // (7) [ Message {id: 'a716bae3-2c2c-4235-b2cc-bf0727f64069', content: 'っs', imageUrl: null, user: User, createdAt: Sat Ju, Message, Message, Message, Message, Message, Message]
@@ -170,6 +171,20 @@ function MainContent({
     }
   }
 
+  // ✅ メッセージを1つ削除
+  const deleteMessage = async (message: Message) => {
+    const confirmed = window.confirm("このメッセージを削除しますか？この操作は取り消せません。");
+    if(!confirmed) return;
+
+    try {
+      await messageRepository.delete(message.id);
+
+      deleteMessageById(message.id); // 👉 ステートを更新
+    } catch(error) {
+      console.error("メッセージの削除に失敗しました。", error);
+    }
+  }
+
   return (
     <div className="main-content">
       <header className="channel-header">
@@ -216,45 +231,66 @@ function MainContent({
                       // console.log(user);
 
                       return (
-                        <>
-                          <div key={ message.id } className="message">
-                            <div className="avatar">
-                              <div className={`avatar-img `}>
-                                <img
-                                  src={ user.iconUrl ?? 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png'}
-                                  alt="Posted image"
-                                  className="message-image"
-                                />
-                              </div>
-                            </div>
-
-                            <div className="message-content">
-                              <div className="message-header">
-                                <span className="username">{ user.name }</span>
-                                <span className="timestamp">{ message.dateTimeString }</span>
-                                <button
-                                  className="message-delete-button"
-                                  title="メッセージを削除"
-                                >
-                                  <svg
-                                    viewBox="0 0 24 24"
-                                    width="16"
-                                    height="16"
-                                    fill="currentColor"
-                                  >
-                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-                                  </svg>
-                                </button>
-                              </div>
-                              <div className="message-text">{ message.content }</div>
+                        <div key={ message.id } className="message">
+                          <div className="avatar">
+                            <div className={`avatar-img `}>
+                              <img
+                                src={ user.iconUrl ?? 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png'}
+                                alt="Posted image"
+                                className="message-image"
+                              />
                             </div>
                           </div>
-                        </>
+
+                          <div className="message-content">
+                            <div className="message-header">
+                              <span className="username">{ user.name }</span>
+                              <span className="timestamp">{ message.dateTimeString }</span>
+
+                              {/*
+                                ✅ メッセージ削除ボタン
+                                → ログインユーザーが投稿したメッセージしか削除できないようにする
+                               */}
+                              {
+                                currentUser.id === message.user.id && (
+                                  <button
+                                    className="message-delete-button"
+                                    title="メッセージを削除"
+                                    onClick={() => deleteMessage(message)}
+                                  >
+                                    <svg
+                                      viewBox="0 0 24 24"
+                                      width="16"
+                                      height="16"
+                                      fill="currentColor"
+                                    >
+                                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                                    </svg>
+                                  </button>
+                                )
+                              }
+                              
+                            </div>
+                            <div className="message-text">{ message.content }</div>
+                            
+                            {/* 画像を表示 */}
+                            {
+                              message.imageUrl != null && (
+                                <div className="message-image-container">
+                                  <div className="message-image-wrapper">
+                                    <img className="msg-image" src={ message.imageUrl } alt="Posted Image" />
+                                  </div>
+                                </div>
+                              )
+                            }
+
+                          </div>
+                        </div>
                       )
                     })
                   }
 
-                  {/* 区切り線 */}
+                  {/* 日付付きの区切り線 */}
                   <div className="date-divider">
                     <span>{ messageGroup.date }</span>
                   </div>

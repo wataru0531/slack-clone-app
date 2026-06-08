@@ -102,10 +102,18 @@ function Home() {
     }
   }
 
-  // ✅ 保持しているMessageを更新する処理
+  // ✅ 保持しているMessageに1つ追加する処理
   const addMessages = (_message: Message) => {
     setMessages(prevState => [_message, ...prevState]);
   }
+
+  // ✅ 保持しているMessageを1つ削除する処理
+  const deleteMessageById = (_messageId: string) => {
+    setMessages(prevState => prevState.filter(message => {
+      return message.id !== _messageId;
+    }))
+  }
+  
 
   useEffect(() => {
     fetchWorkspaces();
@@ -149,6 +157,7 @@ function Home() {
             deleteChannel={ deleteChannel }
             messages={ messages }
             addMessages={ addMessages }
+            deleteMessageById={ deleteMessageById }
           />
         </>
       ) : (

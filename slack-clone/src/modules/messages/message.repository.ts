@@ -46,11 +46,20 @@ export const messageRepository = {
   },
   
   // ✅ 画像の送信
+  // const newMessage = await messageRepository.uploadImage(
+  //   workspaceId,
+  //   selectedChannel.id,
+  //   file
+  // );
   async uploadImage(
     workspaceId: string,
-    channelId: string,
+    channelId: string, 
     file: File
   ) {
+    // postForm → Content-Type: multipart/form-data で送信するためのメソッド
+    //            画像はFileオブジェクトなので、JSONには変換できない
+    // postは、Content-Type: application/jsonで画像などは添付できないため、postFormを使う
+    // application/jsonはテキストや数値を扱う
     const result = await api.postForm(`/messages/${workspaceId}/${channelId}/image`, { 
         file: file,
       }
@@ -59,6 +68,12 @@ export const messageRepository = {
     return new Message(result.data);
   },
 
+  // ✅ メッセージの削除
+  async delete(messageId: string): Promise<boolean> {
+    await api.delete(`/messages/${messageId}`);
+
+    return true;
+  }
 
 
 

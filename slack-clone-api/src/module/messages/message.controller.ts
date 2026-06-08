@@ -74,7 +74,7 @@ messageController.post('/:workspaceId/:channelId', Auth, async (req: Request, re
       channelId,
       userId: req.currentUser.id,
     });
-
+    
     // 保存したメッセージを再取得
     // → さっきのsaveは：user情報が入っていない、リレーションがないので、
     //   ユーザー情報付きで取得しなおす
@@ -86,7 +86,7 @@ messageController.post('/:workspaceId/:channelId', Auth, async (req: Request, re
     // ⭐️ Socket.IOを使用してリアルタイムで新しいメッセージを全体に配信
     // → サーバー → Socket.IO → 全ユーザーの画面を更新する
     // サーバーが、new-messageというイベント名で、newMessageを全クライアントに送る
-    // ⭐️ フロントでの受け取り方
+    // ⭐️ フロントでの通知の受け取り方
     // → socket.on("new-message", (data) => { console.log(data)})
     io.emit('new-message', newMessage);
 
@@ -97,7 +97,11 @@ messageController.post('/:workspaceId/:channelId', Auth, async (req: Request, re
   }
 });
 
-// 画像アップロードエンドポイント
+
+// ✅ 画像アップロードエンドポイント
+// await api.postForm(`/messages/${workspaceId}/${channelId}/image`, { 
+//   file: file,
+// }
 messageController.post('/:workspaceId/:channelId/image', Auth, async (req: Request, res: Response) => {
   // → 特定のチャンネルに画像を投稿する。どのワークスペースでどのチャンネルか
   try {
@@ -107,7 +111,7 @@ messageController.post('/:workspaceId/:channelId/image', Auth, async (req: Reque
       where: {
         id: channelId, // チャンネルが存在するか
         workspaceId,   // workspaceが一致しているかどうか
-        workspace: { workspaceUsers: { userId: req.currentUser.id } },
+        workspace: { workspaceUsers: { userId: req.currentUser.id } }, // 現在のログインユーザー
         // → このユーザーがそのワークスペースに所属しているか
       },
       relations: ['workspace', 'workspace.workspaceUsers'],
@@ -127,7 +131,7 @@ messageController.post('/:workspaceId/:channelId/image', Auth, async (req: Reque
       return;
     }
 
-    // DBに保存
+    // Messageテーブルに保存
     const message = await messageRepository.save({
       channelId,
       userId: req.currentUser.id,
