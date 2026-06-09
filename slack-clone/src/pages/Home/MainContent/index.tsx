@@ -179,7 +179,7 @@ function MainContent({
     try {
       await messageRepository.delete(message.id);
 
-      deleteMessageById(message.id); // 👉 ステートを更新
+      deleteMessageById(message.id); // 👉 削除後のステートを更新
     } catch(error) {
       console.error("メッセージの削除に失敗しました。", error);
     }

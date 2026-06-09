@@ -114,7 +114,6 @@ function Home() {
     }))
   }
   
-
   useEffect(() => {
     fetchWorkspaces();
   }, []);

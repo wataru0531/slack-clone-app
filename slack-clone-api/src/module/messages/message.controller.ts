@@ -162,7 +162,7 @@ messageController.delete('/:id', Auth, async (req: Request, res: Response) => {
         id, // idが一致しているか(メッセージがあるか)
         userId: req.currentUser.id // ログインしているユーザーのidと一致しているか
       },
-      relations: ['channel'],
+      relations: ['channel'], // このメッセージに紐づくチャンネルのデータもくださいということ
     });
 
     if(!existingMessage) {
@@ -172,7 +172,9 @@ messageController.delete('/:id', Auth, async (req: Request, res: Response) => {
 
     await messageRepository.delete(id); // 👉 削除
 
-    // Socket.IOを使用してリアルタイムでメッセージ削除を全クライアントに配信
+    // ⭐️ Socket.IOを使用してリアルタイムでメッセージ削除を全クライアントに配信
+    // emit → 発信
+    // on   → 受信
     io.emit('delete-message', id);
 
     res.status(200).json({ status: true });

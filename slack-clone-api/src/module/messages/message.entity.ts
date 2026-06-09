@@ -39,7 +39,6 @@ export class Message {
   @Column() // 投稿者のID
   userId: string;
 
-  // ⭐️ TODO
   // ✅ ユーザーとの関係
   // → このMessageは1人のUserに属するという意味
   // () => User ... このリレーションの相手はUser、という意味
@@ -47,9 +46,12 @@ export class Message {
   // → User側から見たとき、このMessageはどのプロパティに入るの？」という“逆方向の定義
   //   なので、User側の定義は逆に、下記のようになっている
   //   @OneToMany(() => Message, (message) => message.user)
+
+  // ⭐️ この部分の処理で、message.userId ←→ userid　のリレーションがTypeORMの中で自動で
+  //    設定される
   @ManyToOne(() => User, (user) => user.messages)
-  @Index()
-  user: User;
+  @Index() // このカラムにインデックスをつける
+  user: User; // このMessageは1人のUserに属しますということ
 
   @Column()
   channelId: string;
