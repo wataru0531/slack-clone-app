@@ -18,6 +18,7 @@ import type { Channel } from "../../modules/channels/channel.entity";
 import { channelRepository } from "../../modules/channels/channel.repository";
 import { Message } from "../../modules/messages/message.entity";
 import { messageRepository } from "../../modules/messages/message.repository";
+import { subscribe, unsubscribe } from "../../lib/socket";
 
 
 function Home() {
@@ -113,13 +114,38 @@ function Home() {
       return message.id !== _messageId;
     }))
   }
+
+  // ✅ WebSocket メッセージ追加 
+  // 👉 フロントのステートを更新していく
+  // サーバー側で
+  const handleNewMessage = (message: Message) => {
+    setMessages(prevState => [ message, ...prevState ])
+  }
+
+  // ✅ WebSocket メッセージ削除
+  const handleDeleteMessage = (messageId: string) => {
+    setMessages(prevState => prevState.filter(message => message.id !== messageId))
+  }
   
   useEffect(() => {
     fetchWorkspaces();
   }, []);
 
   useEffect(() => {
-    fetchChannels()
+    fetchChannels();
+
+    // ⭐️ Web Socketの設定
+    subscribe(
+      workspaceId, 
+      handleNewMessage, 
+      handleDeleteMessage
+    );
+
+    return () => {
+      // ワークスペースから出ると通知、イベント登録解除
+      unsubscribe(workspaceId);
+    }
+
   }, [ workspaceId ]); // workspaceIdが切り替わるごとに、チャンネルを変える
 
   useEffect(() => {
